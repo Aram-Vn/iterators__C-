@@ -12,6 +12,101 @@ public:
 
         const_itr (const T* ptr1) : ptr(const_cast<T*>(ptr1)) {}
 
+        const_itr& operator= (const const_itr& other) {
+            this->ptr = other.ptr;
+            return *this;
+        }
+
+        const T& operator* () const {
+            return *ptr;
+        }
+
+        const T* operator-> () const {
+            return ptr;
+        }
+
+        const_itr& operator++ () {
+            ++ptr;
+            return *this;
+        }  
+
+        const_itr operator++ (int) {
+            const_itr tmp = *this;
+            ++ptr;
+            return tmp;
+        }
+
+        const_itr& operator-- () {
+            --ptr;
+            return *this;
+        }
+
+        const_itr operator-- (int) {
+            const_itr tmp = *this;
+            --ptr;
+            return tmp;
+        }
+
+        const_itr operator+ (const int n) const {
+            const_itr tmp = *this;
+
+            for (int i = 0; i < n; ++i) {
+                ++tmp.ptr;
+            }
+
+            return tmp;
+        }
+
+        const_itr operator- (const int n) const {
+            const_itr tmp = *this;
+
+            for (int i = 0; i < n; ++i) {
+                --tmp.ptr;
+            }
+
+            return tmp;
+        }
+
+        const_itr& operator+= (const int n) {
+            for (int i = 0; i < n; ++i) {
+                ++this->ptr;
+            }
+
+            return *this;
+        }
+
+        const_itr& operator-= (const int n) {
+            for (int i = 0; i < n; ++i) {
+                --this->ptr;
+            }
+
+            return *this;
+        }
+
+        bool operator== (const const_itr& other) const {
+            return this->ptr == other.ptr;
+        }
+
+        bool operator!= (const const_itr& other) const {
+            return !(this->ptr == other.ptr);
+        }
+
+        bool operator> (const const_itr& other) const {
+            return this->ptr > other.ptr;
+        }
+
+        bool operator< (const const_itr& other) const {
+            return this->ptr < other.ptr;
+        }
+
+        bool operator>= (const const_itr& other) const {
+            return !(this->ptr < other.ptr);
+        }
+
+        bool operator<= (const const_itr& other) const {
+            return !(this->ptr > other.ptr);
+        }
+
         const T& operator[] (int i) const{
             return *(ptr + i);
         }
@@ -42,7 +137,6 @@ public:
         }
 
         random_access_itr& operator++ () {
-            std::cout << "const ++" << std::endl;
             ++ptr;
             return *this;
         }
@@ -152,11 +246,11 @@ private:
 int main () {
 
     const Vec<int> vec = {1, 2, 3, 4, 5, 6};
-    const Vec<int>::c_itr fit = vec.c_begin();
+    Vec<int>::c_itr fit = vec.c_begin();
 
-    //fit[0] = 8;
+    ++fit;
 
-    std::cout << fit[2] << std::endl;
+    std::cout << *fit + 2 << std::endl;
 
 
  /*   fit = vec.end() - 2;
