@@ -5,49 +5,138 @@ template <typename T>
 class Vec
 {
 public:
+    class const_itr
+    {
+    public:
+        const_itr () : ptr(nullptr) {}
+
+        const_itr (const T* ptr1) : ptr(const_cast<T*>(ptr1)) {}
+
+        const_itr& operator= (const const_itr& other) {
+            this->ptr = other.ptr;
+            return *this;
+        }
+
+        const T& operator* () const {
+            return *ptr;
+        }
+
+        const T* operator-> () const {
+            return ptr;
+        }
+
+        const_itr& operator++ () {
+            ++ptr;
+            return *this;
+        }  
+
+        const_itr operator++ (int) {
+            const_itr tmp = *this;
+            ++ptr;
+            return tmp;
+        }
+
+        const_itr& operator-- () {
+            --ptr;
+            return *this;
+        }
+
+        const_itr operator-- (int) {
+            const_itr tmp = *this;
+            --ptr;
+            return tmp;
+        }
+
+        const_itr operator+ (const int n) const {
+            const_itr tmp = *this;
+            std::cout << "A" << std::endl;
+            for (int i = 0; i < n; ++i) {
+                ++tmp.ptr;
+            }
+
+            return tmp;
+        }
+
+        const_itr operator- (const int n) const {
+            const_itr tmp = *this;
+
+            for (int i = 0; i < n; ++i) {
+                --tmp.ptr;
+            }
+
+            return tmp;
+        }
+
+        const_itr& operator+= (const int n) {
+            for (int i = 0; i < n; ++i) {
+                ++this->ptr;
+            }
+
+            return *this;
+        }
+
+        const_itr& operator-= (const int n) {
+            for (int i = 0; i < n; ++i) {
+                --this->ptr;
+            }
+
+            return *this;
+        }
+
+        bool operator== (const const_itr& other) const {
+            return this->ptr == other.ptr;
+        }
+
+        bool operator!= (const const_itr& other) const {
+            return !(this->ptr == other.ptr);
+        }
+
+        bool operator> (const const_itr& other) const {
+            return this->ptr > other.ptr;
+        }
+
+        bool operator< (const const_itr& other) const {
+            return this->ptr < other.ptr;
+        }
+
+        bool operator>= (const const_itr& other) const {
+            return !(this->ptr < other.ptr);
+        }
+
+        bool operator<= (const const_itr& other) const {
+            return !(this->ptr > other.ptr);
+        }
+
+        const T& operator[] (int i) const{
+            return *(ptr + i);
+        }
+
+
+    private:
+        T* ptr;
+    };
+
     class random_access_itr
     {
     public:
-        random_access_itr() : 
-            ptr(nullptr),
-            c_ptr(nullptr)
-        {}
+        random_access_itr() : ptr(nullptr) {}
 
-        random_access_itr(T* ptr1) : 
-            ptr(ptr1),
-            c_ptr(nullptr) 
-        {}
-
-        random_access_itr(const T* ptr1) : 
-            ptr(nullptr),
-            c_ptr(ptr1)
-        {}
+        random_access_itr(T* ptr1) : ptr(ptr1) {}
 
         random_access_itr&  operator= (const random_access_itr& other) {
             this->ptr = other.ptr;
             return *this;
         }
-
-        //random_access_itr(const T* ptr1) : ptr(const_cast<T*>(ptr1)) {}
  
         T& operator* () {
             return *ptr;
-        }
-
-        const T& operator* () const {
-            return *c_ptr;
         }
 
         T* operator-> () {
             return ptr;
         }
 
-        const T* operator-> () const {
-            return c_ptr;
-        }
-
         random_access_itr& operator++ () {
-            std::cout << "const ++" << std::endl;
             ++ptr;
             return *this;
         }
@@ -94,12 +183,7 @@ public:
             return *this;
         }
 
-        bool operator== (const random_access_itr& other) const {
-            std::cout << "const" << std::endl;
-            return this->c_ptr == other.c_ptr; 
-        }
-
-        bool operator== (const random_access_itr& other) {
+        bool operator== (const random_access_itr& other) const{
             std::cout << "not const" << std::endl;
             return this->ptr == other.ptr; 
         }
@@ -124,16 +208,8 @@ public:
             return *(ptr + i);
         }
 
-        const T& operator[] (int i) const {
-            random_access_itr tmp = *this;
-        
-            return *(tmp.c_ptr + i);
-        }
-
-
     private:
         T* ptr;
-        const T* c_ptr;
     };
 
 public:
@@ -141,9 +217,10 @@ public:
 
 public:
     using r_itr = random_access_itr;
-    
-    const r_itr c_begin() const {
-        return r_itr(vec.data());
+    using c_itr = const_itr;
+
+    const c_itr c_begin() const {
+        return c_itr(vec.data());
     }
 
 
@@ -151,8 +228,8 @@ public:
         return r_itr(vec.data());
     }
 
-    const r_itr c_end() const {
-        return r_itr(vec.data() + vec.size());
+    const c_itr c_end() const {
+        return c_itr(vec.data() + vec.size());
     }
 
 
@@ -169,15 +246,12 @@ private:
 int main () {
 
     const Vec<int> vec = {1, 2, 3, 4, 5, 6};
-    const Vec<int>::r_itr fit = vec.c_begin();
+    Vec<int>::c_itr fit;
 
-    //fit[0] = 8;
+    fit = vec.c_begin();
 
-    std::cout << *(fit) << std::endl;
+    std::cout << *(fit + 2) << std::endl;
 
-    if(fit == fit) {
-       // std::cout << "YES" << std::endl;
-    }
 
  /*   fit = vec.end() - 2;
 
